@@ -1,4 +1,4 @@
-import {users,products, purchase, getAllUsers, createProducts, getAllProducts, getProductById, queryProductsByName, getAllPurchaseId, createPurchase} from './database'
+import {users, products, purchase, getAllUsers, createProducts, getAllProducts, getProductById, queryProductsByName, getAllPurchaseId, createPurchase} from './database'
 import { Category, Product, Purchase, User } from './types'
 import express, {Request, Response} from 'express'
 import cors from 'cors'
@@ -61,7 +61,36 @@ app.post("/purchases", (req: Request, res: Response)=>{
   purchase.push(newPurchase)
   res.status(201).send('Compra realizada com sucesso!')
 })
+//  exercicio 1 aprofundamento API e express
+// pegando produtos por ID
+app.get("/products/:id", (req: Request, res: Response)=>{
+  const id: string = req.params.id
+  const result: Product[]= products.filter((item)=> item.id === id)
+  res.status(200).send(result)
+})
+// pegando itens de compra por ID
+app.get("/users/:id/purchases", (req:Request, res:Response)=>{
+  const userId: string = req.params.id
+  const results: Purchase[]= purchase.filter((item)=> item.userId === userId)
+  res.status(200).send(results)
 
+})
+
+// exercicio 3 reforço de express para alterar informações do objeto
+app.put("/user/:id",(req:Request, res: Response)=>{
+  const id: string = req.params.id
+  const newEmail = req.body.newEmail
+  const newPassword = req.body.newPassword  
+  const newUsers: User[]= users.filter((item)=> item.id === id)
+  if (newUsers.length > 0) {
+    newUsers[0].email = newEmail || newUsers[0].email
+    newUsers[0].password = newPassword || newUsers[0].password 
+    console.log(newUsers)
+  } else {
+    console.log(`Usuário com o id ${id} não encontrado.`)
+  }
+  res.status(200).send('Cadastro de usuário realizado com sucesso')
+})
 
 // chamando dados mockados
 // console.table(users,['id', 'password', 'email' ]);
@@ -92,19 +121,5 @@ app.post("/purchases", (req: Request, res: Response)=>{
 // função que lista novas compras pelo Id
 // getAllPurchaseId('03')
 
-// exercicios fixação da aula typescript-I
-// type Person={
-//     id: string,
-//     name: string,
-//     email: string,
-//     password: string,
-//     role: string
-// }
-// const user1: Person={
-//     id: '01',
-//     name: 'rogerio',
-//     email: 'kayronny@hotmail.com',
-//     password:'12345',
-//     role: 'Admin'
-// }
+
 
