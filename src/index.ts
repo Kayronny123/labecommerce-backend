@@ -1,4 +1,4 @@
-import {users, products, purchase, getAllUsers, createProducts, getAllProducts, getProductById, queryProductsByName, getAllPurchaseId, createPurchase} from './database'
+import {users,products, purchase, getAllUsers, createProducts, getAllProducts, getProductById, queryProductsByName, getAllPurchaseId, createPurchase} from './database'
 import { Category, Product, Purchase, User } from './types'
 import express, {Request, Response} from 'express'
 import cors from 'cors'
@@ -61,22 +61,50 @@ app.post("/purchases", (req: Request, res: Response)=>{
   purchase.push(newPurchase)
   res.status(201).send('Compra realizada com sucesso!')
 })
-//  exercicio 1 aprofundamento API e express
+
+// exercicio 1 aprofundamento api express
 // pegando produtos por ID
-app.get("/products/:id", (req: Request, res: Response)=>{
+app.get("/products/:id", (req:Request, res: Response)=>{
   const id: string = req.params.id
-  const result: Product[]= products.filter((item)=> item.id === id)
+  const result: Product[] = products.filter((item)=> item.id === id)
+
   res.status(200).send(result)
 })
-// pegando itens de compra por ID
-app.get("/users/:id/purchases", (req:Request, res:Response)=>{
+// Pegando itens de compra por ID
+app.get("/users/:id/purchases", (req: Request, res: Response)=>{  
   const userId: string = req.params.id
-  const results: Purchase[]= purchase.filter((item)=> item.userId === userId)
+  const results: Purchase[] = purchase.filter((item)=> item.userId === userId)
   res.status(200).send(results)
+})
+// exercicio 2 
+// deletando usuário por id
+app.delete("/users/:id", (req: Request, res: Response)=>{
+  const id = req.params.id
+
+   const indexDelUser = users.findIndex((item)=>{
+    return item.id === id
+   }) 
+   if(indexDelUser >= 0){
+    users.splice(indexDelUser, 1)
+   }
+   
+    res.status(200).send("Usuário deletado com sucesso!")
 
 })
+// deletando produtos por id
+app.delete("/products/:id", (req: Request, res: Response)=>{
+  const id = req.params.id
 
-// exercicio 3 reforço de express para alterar informações do objeto
+  const indexDelProduct = products.findIndex((item)=>{
+    return item.id === id
+  })
+  if(indexDelProduct >= 0 ){
+    products.splice(indexDelProduct,1)
+  }
+  res.status(200).send("Produto Deletado com sucesso!")
+})
+// exercicio 3
+//  alterar informações do usuário email e senha usando seu ID
 app.put("/user/:id",(req:Request, res: Response)=>{
   const id: string = req.params.id
   const newEmail = req.body.newEmail
@@ -91,6 +119,25 @@ app.put("/user/:id",(req:Request, res: Response)=>{
   }
   res.status(200).send('Cadastro de usuário realizado com sucesso')
 })
+//  alterar informações do produto, nome, preço e categoria usando seu ID
+app.put("/products/:id", (req: Request, res: Response)=>{
+    const id: string = req.params.id
+    const newName = req.body.newName
+    const newPrice = req.body.newPrice
+    const newCategory = req.body.newCategory
+    const newProducts: Product[] = products.filter((item)=> item.id === id)
+    
+    if(newProducts.length > 0){
+      newProducts[0].name = newName || newProducts[0].name
+      newProducts[0].price = newPrice || newProducts[0].price
+      newProducts[0].category = newCategory || newProducts[0].category
+    } else {
+      console.log(`Produto com o ${id} não encontrado`)
+    }
+    res.status(200).send("Cadastro do produto atualizado com sucesso")
+})
+
+
 
 // chamando dados mockados
 // console.table(users,['id', 'password', 'email' ]);
@@ -121,5 +168,19 @@ app.put("/user/:id",(req:Request, res: Response)=>{
 // função que lista novas compras pelo Id
 // getAllPurchaseId('03')
 
-
+// exercicios fixação da aula typescript-I
+// type Person={
+//     id: string,
+//     name: string,
+//     email: string,
+//     password: string,
+//     role: string
+// }
+// const user1: Person={
+//     id: '01',
+//     name: 'rogerio',
+//     email: 'kayronny@hotmail.com',
+//     password:'12345',
+//     role: 'Admin'
+// }
 
